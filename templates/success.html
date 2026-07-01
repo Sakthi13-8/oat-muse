@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link rel="icon" type="image/png" href="{{url_for('static', filename='images/favicon.png') }}">
+    <meta charset="UTF-8">
+    <title>Order Successful</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body style="margin:0; background:#f8f6f2;">
+
+<div style="
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    text-align:center;
+">
+
+    <h1 style="font-size:48px; color:#6f7c5d;">
+        🎉 Order Placed Successfully!
+    </h1>
+
+    <h2>Thank You, {{ name }}!</h2>
+
+    <p>Your Oat Muse order has been received successfully.</p>
+
+    <h3>Total Paid: ₹{{ total }}</h3>
+
+    <br>
+
+    <a href="/" class="primary-btn">
+        Continue Shopping
+    </a>
+
+</div>
+
+</body>
+
+</html>

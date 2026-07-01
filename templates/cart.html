@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="icon" type="image/png" href="{{url_for('static', filename='images/favicon.png') }}">
+    <meta charset="UTF-8">
+    <title>Oat Muse | Cart</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+
+<header style="padding:20px; text-align:center;">
+    <h1>Your Cart 🛒</h1>
+    <a href="/" style="color:#8d9a7d;">← Back to Home</a>
+</header>
+
+<section style="padding:60px 8%; background:#f8f6f2;"></section>
+
+    {% if cart %}
+
+    <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:30px;">
+
+        {% for item in cart %}
+        <div class="cart-item">
+            <img src="/static/images/{{ item.image }}" style="width:100%; border-radius:15px;">
+            <h3>{{ item.name }}</h3>
+            <p>₹{{ item.price }}</p>
+            <form action="/remove-from-cart" method="POST">
+            <input type="hidden" name="name" value="{{ item.name }}">
+            <button type="submit" class="remove-btn">
+              🗑 Remove
+            </button>
+           </form>
+        </div>
+        {% endfor %}
+
+    </div>
+
+    <h2 style="text-align:center; margin-top:40px;">
+        Total: ₹{{ total }}
+        <a href="/checkout">
+    <button style="padding:12px 25px; background:#7d4f50; color:white; border:none; margin-top:20px;">
+        Proceed to Checkout
+    </button>
+        </a>
+    </h2>
+
+    {% else %}
+
+    <h2 style="text-align:center;">Your cart is empty 🛒</h2>
+
+    {% endif %}
+
+</section>
+
+</body>
+</html>

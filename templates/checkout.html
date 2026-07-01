@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<link rel="icon" type="image/png" href="{{url_for('static', filename='images/favicon.png') }}">
+    <title>Oat Muse | Checkout</title>
+
+    <link rel="stylesheet" href="/static/style.css">
+
+</head>
+
+<body>
+
+<section class="checkout show">
+
+    <h1>Checkout</h1>
+
+    <div class="checkout-container">
+
+        <div class="customer-details">
+
+            <h2>Customer Details</h2>
+
+            <form action="/place-order" method="POST">
+
+                <input type="text" name="name" placeholder="Full Name" required>
+
+                <input type="email" name="email" placeholder="Email" required>
+
+                <input type="text" name="phone" placeholder="Phone Number" required>
+
+                <textarea
+                    name="address"
+                    placeholder="Delivery Address"
+                    rows="4"
+                    required></textarea>
+
+                <button type="submit" class="primary-btn">
+                    Place Order
+                </button>
+
+            </form>
+
+        </div>
+
+        <div class="order-summary">
+
+            <h2>Order Summary</h2>
+
+            {% for item in cart %}
+
+                <p>{{ item.name }} - ₹{{ item.price }}</p>
+
+            {% endfor %}
+
+            <hr>
+
+            <h3>Total : ₹{{ total }}</h3>
+
+        </div>
+
+    </div>
+
+</section>
+
+</body>
+
+</html>
