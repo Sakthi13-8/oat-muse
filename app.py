@@ -1,19 +1,23 @@
+from database import init_db
 from flask import Flask, render_template, request, jsonify, session, redirect
-import mysql.connector
+import sqlite3
 
 app = Flask(__name__)
 
-db = mysql.connector.connect(
-    host="localhost",
-    user="root",
-    password="Sakthii@138",
-    database="oatmuse"
-)
+# Initialize SQLite DB
+init_db()
 
-cursor = db.cursor()
-
-# SECRET KEY (required for session/cart)
+# Secret key for session/cart
 app.secret_key = "oatmuse_secret_key"
+
+
+# =========================
+# DATABASE CONNECTION
+# =========================
+def get_db():
+    conn = sqlite3.connect("oatmuse.db")
+    conn.row_factory = sqlite3.Row
+    return conn
 
 
 # =========================
@@ -25,7 +29,7 @@ def home():
 
 
 # =========================
-# PRODUCTS API (15 PRODUCTS)
+# PRODUCTS API
 # =========================
 @app.route("/api/products")
 def products():
@@ -46,7 +50,6 @@ def products():
         {"id": 14, "name": "Oat Muse Milk Serum", "price": 599, "image": "recovery_serum.png"},
         {"id": 15, "name": "Oat Muse Complete Skincare Collection", "price": 2499, "image": "collection.png"}
     ]
-
     return jsonify(product_list)
 
 
@@ -71,20 +74,18 @@ def contact():
 def add_to_cart():
     product = request.json
 
-    print("Received Product:", product)   # <-- Add this line
-
     if "cart" not in session:
         session["cart"] = []
 
     session["cart"].append(product)
     session.modified = True
 
-    print("Current Cart:", session["cart"])   # <-- Add this line
-
     return jsonify({
         "message": "Added to cart",
         "cart": session["cart"]
     })
+
+
 # =========================
 # CART PAGE
 # =========================
@@ -95,16 +96,21 @@ def cart():
 
     return render_template("cart.html", cart=cart_items, total=total)
 
+
+# =========================
+# CHECKOUT PAGE
+# =========================
 @app.route("/checkout")
 def checkout():
     cart_items = session.get("cart", [])
     total = sum(item["price"] for item in cart_items)
 
-    return render_template(
-        "checkout.html",
-        cart=cart_items,
-        total=total
-    )
+    return render_template("checkout.html", cart=cart_items, total=total)
+
+
+# =========================
+# PLACE ORDER (SQLITE FIXED)
+# =========================
 @app.route("/place-order", methods=["POST"])
 def place_order():
 
@@ -114,16 +120,18 @@ def place_order():
     address = request.form["address"]
 
     cart_items = session.get("cart", [])
-
     total = sum(item["price"] for item in cart_items)
 
+    conn = get_db()
+    cursor = conn.cursor()
+
     cursor.execute("""
-        INSERT INTO orders
-        (customer_name, email, phone, address, total)
-        VALUES (%s, %s, %s, %s, %s)
+        INSERT INTO orders (customer_name, email, phone, address, total)
+        VALUES (?, ?, ?, ?, ?)
     """, (name, email, phone, address, total))
 
-    db.commit()
+    conn.commit()
+    conn.close()
 
     print("========== NEW ORDER ==========")
     print("Customer:", name)
@@ -136,11 +144,9 @@ def place_order():
 
     session["cart"] = []
 
-    return render_template(
-        "success.html",
-        name=name,
-        total=total
-    )
+    return render_template("success.html", name=name, total=total)
+
+
 # =========================
 # REMOVE FROM CART
 # =========================
@@ -149,7 +155,6 @@ def remove_from_cart():
     name = request.form.get("name")
 
     cart = session.get("cart", [])
-
     cart = [item for item in cart if item["name"] != name]
 
     session["cart"] = cart
@@ -157,14 +162,26 @@ def remove_from_cart():
 
     return redirect("/cart")
 
-@app.route("/admin/orders")
-def view_orders():
-    cursor.execute("SELECT * FROM orders")
-    orders = cursor.fetchall()
-    return render_template("orders.html", orders=orders)
 
 # =========================
-# START SERVER
+# ADMIN ORDERS PAGE
+# =========================
+@app.route("/admin/orders")
+def view_orders():
+
+    conn = get_db()
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT * FROM orders")
+    orders = cursor.fetchall()
+
+    conn.close()
+
+    return render_template("orders.html", orders=orders)
+
+
+# =========================
+# START SERVER (LOCAL ONLY)
 # =========================
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=10000)
