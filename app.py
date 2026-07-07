@@ -1,5 +1,5 @@
 from database import init_db
-from flask import Flask, render_template, request, jsonify, session, redirect
+from flask import Flask, render_template, request, jsonify, session, redirect, flash
 import sqlite3
 
 app = Flask(__name__)
@@ -56,15 +56,22 @@ def products():
 # =========================
 # CONTACT FORM
 # =========================
+
 @app.route("/contact", methods=["POST"])
 def contact():
-    name = request.form.get("first-name")
+    first_name = request.form.get("first-name")
+    last_name = request.form.get("last-name")
     email = request.form.get("email")
     message = request.form.get("message")
 
-    print("New message:", name, email, message)
+    print("========== NEW MESSAGE ==========")
+    print("Name:", first_name, last_name)
+    print("Email:", email)
+    print("Message:", message)
+    print("================================")
 
-    return "Message sent successfully!"
+    flash("Message sent successfully!", "success")
+    return redirect("/")
 
 
 # =========================
