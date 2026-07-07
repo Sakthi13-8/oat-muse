@@ -1,5 +1,7 @@
 # 🌿 Oat Muse – Full-Stack Skincare E-Commerce Website
 
+![Oat Muse Homepage](screenshot.png)
+
 ## Overview
 
 Oat Muse is a full-stack skincare e-commerce web application developed as a final-year Computer Science Engineering project. The application provides a seamless online shopping experience where users can browse products, manage their shopping cart, complete checkout, and place orders.
