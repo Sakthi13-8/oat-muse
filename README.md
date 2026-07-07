@@ -131,9 +131,3 @@ Stored details include:
 * Product Categories and Filters
 
 ---
-
-## Author
-
-**Sakthi P **
-
-Final-Year Computer Science Engineering Student.
